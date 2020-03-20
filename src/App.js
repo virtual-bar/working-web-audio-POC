@@ -1,14 +1,12 @@
 import React from "react";
 import "./styles/App.scss";
-import Volume from "./components/Volume";
-import Play from "./components/Play";
+import Controls from "./components/Controls";
 
 function App() {
   return (
     <div className="App">
       <header className="Controls">
-        <Play />
-        <Volume />
+        <Controls />
       </header>
     </div>
   );
