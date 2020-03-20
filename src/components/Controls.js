@@ -15,20 +15,19 @@ class Controls extends Component {
   }
 
   togglePlay(event) {
-    this.state.playing === "false"
-      ? this.setState({ playing: "true", aria: true })
-      : this.setState({ playing: "false", aria: "false" });
-    console.log(this.state.playing);
+    this.setState({ playing: !this.state.playing });
+    this.setState({ aria: !this.state.aria });
+    //console.log(this.state.playing);
   }
 
   changeVolume(event) {
     this.setState({ volume: event.target.value });
-    console.log(this.state.volume);
+    //console.log(this.state.volume);
   }
 
   changePan(event) {
     this.setState({ pan: event.target.value });
-    console.log(this.state.pan);
+    //console.log(this.state.pan);
   }
 
   componentDidMount() {
