@@ -15,8 +15,12 @@ class Controls extends Component {
   }
 
   togglePlay(event) {
-    this.setState({ playing: !this.state.playing });
-    this.setState({ aria: !this.state.aria });
+    /*this.setState({ playing: !this.state.playing });
+    this.setState({ aria: !this.state.aria });*/
+
+    this.state.playing === "false"
+      ? this.setState({ playing: "true", aria: true })
+      : this.setState({ playing: "false", aria: "false" });
     //console.log(this.state.playing);
   }
 
