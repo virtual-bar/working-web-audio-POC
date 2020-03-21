@@ -4,10 +4,10 @@ class Controls extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      playing: "false",
-      volume: "1",
-      pan: "0",
-      aria: "false"
+      playing: false,
+      volume: 1,
+      pan: 0,
+      aria: false
     };
     this.togglePlay = this.togglePlay.bind(this);
     this.changeVolume = this.changeVolume.bind(this);
@@ -53,7 +53,6 @@ class Controls extends Component {
     if (this.audioCtx.state === "suspended") {
       this.audioCtx.resume();
       this.audioElement.pause();
-      this.setState({ playing: "false" });
     }
     this.state.playing ? this.audioElement.play() : this.audioElement.pause();
     this.gainNode.gain.value = this.state.volume;
