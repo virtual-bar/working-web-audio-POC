@@ -92,9 +92,7 @@ const Controles = () => {
         step="0.01"
       />
       <datalist id="gainVals">
-        <option value="0" label="min" />
         <option value="1" label="unity" />
-        <option value="2" label="max" />
       </datalist>
 
       <input
@@ -109,9 +107,7 @@ const Controles = () => {
         step="0.01"
       />
       <datalist id="panVals">
-        <option value="-1" label="left" />
         <option value="0" label="unity" />
-        <option value="1" label="right" />
       </datalist>
     </>
   );
