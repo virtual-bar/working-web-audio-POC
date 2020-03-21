@@ -1,12 +1,20 @@
 import React, { useState, useEffect } from "react";
 
+/////////////////////////////////////////////////////////////////////
+// POC for client-side single-source audio control using Web-Audio
+// API.
+//
+// Brandon Whittle, Christian Fuller
+// Bring Your Own Bar (BYOB)
+// 2020
+/////////////////////////////////////////////////////////////////////
+
+// Custom hook to setup audio states
 const useAudio = ({ initialGain, initialPan }) => {
   const AudioContext = window.AudioContext || window.webkitAudioContext;
   const [audioCtx] = useState(new AudioContext());
   const [gainNode] = useState(audioCtx.createGain());
   const [panner] = useState(new StereoPannerNode(audioCtx, { pan: initialPan }));
-
-  //!
 
   gainNode.gain.value = initialGain;
 
@@ -14,18 +22,19 @@ const useAudio = ({ initialGain, initialPan }) => {
 };
 
 const Controles = () => {
-  //console.warn("!!!!!");
   // () => "anonymous function; unnamed" i.e. onClick = () => {}
-  //get ready for hooks bitch
-  //hooks are basically functions, powerful bc pattern
+  // Get ready for hooks
+  // Hooks are basically functions, powerful bc pattern
+
+  // Setting states for user controls
   const [playing, setPlaying] = useState(false);
   const [volume, setVolume] = useState(1);
   const [pan, setPan] = useState(0);
 
+  // Initialization of audio states
   const { audioCtx, gainNode, panner } = useAudio({ initialGain: 1, initialPan: 0 }); //can pass initials here if desired
 
-  console.log({ gainNode, panner });
-
+  // Play/Pause Button functionality
   const togglePlaying = () => {
     if (audioCtx.state === "suspended") {
       audioCtx.resume();
@@ -33,6 +42,7 @@ const Controles = () => {
     setPlaying(!playing);
   };
 
+  // Volume Slider functionality
   const changeVolume = e => {
     const {
       target: { value }
@@ -40,31 +50,33 @@ const Controles = () => {
     setVolume(value);
   };
 
+  // Panning Slider functionality
   const changePan = ({ target: { value } }) => setPan(value); //^^ they're the same
 
+  // SGetter for use in useEffect()
   const getAudioElement = () => document.querySelector("audio");
 
+  // Post-Render One-Time Setup
   useEffect(() => {
-    console.log("Hi, Mom, I'm using an effect!");
     const audioElement = getAudioElement();
     const track = audioCtx.createMediaElementSource(audioElement);
-    //console.log({ audioElement, track });
+
     track
       .connect(gainNode)
       .connect(panner)
       .connect(audioCtx.destination);
-  }, []); //! We do not want this to run again
+  }, []); // Do not run again
 
+  // Post-Render On-Change settings
   useEffect(() => {
     const audioElement = getAudioElement();
 
     playing ? audioElement.play() : audioElement.pause();
     gainNode.gain.value = volume;
     panner.pan.value = pan;
-    //console.log(gainNode.gain.value);
-    //console.log(panner.pan.value);
-  }, [playing, volume, pan]);
+  }, [playing, volume, pan]); // Run only when these values change
 
+  // Good ol' JSX
   return (
     <>
       <audio
