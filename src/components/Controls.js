@@ -70,8 +70,13 @@ const Controles = () => {
   // Post-Render On-Change settings
   useEffect(() => {
     const audioElement = getAudioElement();
+    
+    if (playing && audioElement.paused)  {
+      audioElement.play();
+    } else if (!playing && !audioElement.paused) { 
+      audioElement.pause();
+    }
 
-    playing ? audioElement.play() : audioElement.pause();
     gainNode.gain.value = volume;
     panner.pan.value = pan;
   }, [playing, volume, pan]); // Run only when these values change
