@@ -1,12 +1,12 @@
 import React from "react";
 import "./styles/App.scss";
-import Controls from "./components/Controls";
+import Controles from "./components/Controls";
 
 function App() {
   return (
     <div className="App">
       <header className="controls-pane">
-        <Controls />
+        <Controles />
       </header>
     </div>
   );
