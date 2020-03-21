@@ -5,7 +5,7 @@ import Controls from "./components/Controls";
 function App() {
   return (
     <div className="App">
-      <header className="Controls">
+      <header className="controls-pane">
         <Controls />
       </header>
     </div>

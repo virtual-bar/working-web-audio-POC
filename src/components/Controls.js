@@ -15,12 +15,8 @@ class Controls extends Component {
   }
 
   togglePlay(event) {
-    /*this.setState({ playing: !this.state.playing });
-    this.setState({ aria: !this.state.aria });*/
-
-    this.state.playing === "false"
-      ? this.setState({ playing: "true", aria: true })
-      : this.setState({ playing: "false", aria: "false" });
+    this.setState({ playing: !this.state.playing });
+    this.setState({ aria: !this.state.aria });
     //console.log(this.state.playing);
   }
 
@@ -35,38 +31,38 @@ class Controls extends Component {
   }
 
   componentDidMount() {
-    const AudioContext = window.AudioContext || window.webkitAudioContext;
-    const audioCtx = new AudioContext();
+    this.AudioContext = window.AudioContext || window.webkitAudioContext;
+    this.audioCtx = new AudioContext();
 
-    const audioElement = document.querySelector("audio");
-    const track = audioCtx.createMediaElementSource(audioElement);
+    this.audioElement = document.querySelector("audio");
+    this.track = this.audioCtx.createMediaElementSource(this.audioElement);
 
-    const gainNode = audioCtx.createGain();
-    gainNode.gain.value = this.state.volume;
+    this.gainNode = this.audioCtx.createGain();
+    this.gainNode.gain.value = this.state.volume;
 
-    if (audioCtx.state === "suspended") {
-      audioCtx.resume();
-    }
-    audioElement.play();
-    track.connect(gainNode).connect(audioCtx.destination);
+    this.pannerOptions = { pan: 0 };
+    this.panner = new StereoPannerNode(this.audioCtx, this.pannerOptions);
+
+    this.track
+      .connect(this.gainNode)
+      .connect(this.panner)
+      .connect(this.audioCtx.destination);
   }
 
-  /*componentDidUpdate() {
-    const AudioContext = window.AudioContext || window.webkitAudioContext;
-    const audioCtx = new AudioContext();
-
-    const audioElement = document.querySelector("audio");
-    const track = audioElement;
-
-    const gainNode = audioCtx.createGain();
-    gainNode.gain.value = this.state.volume;
-
-    this.state.playing ? audioElement.play() : audioElement.pause();
-  }*/
+  componentDidUpdate() {
+    if (this.audioCtx.state === "suspended") {
+      this.audioCtx.resume();
+      this.audioElement.pause();
+      this.setState({ playing: "false" });
+    }
+    this.state.playing ? this.audioElement.play() : this.audioElement.pause();
+    this.gainNode.gain.value = this.state.volume;
+    this.panner.pan.value = this.state.pan;
+  }
 
   render() {
     return (
-      <div>
+      <>
         <audio
           src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/858/outfoxing.mp3"
           crossOrigin="anonymous"
@@ -101,7 +97,7 @@ class Controls extends Component {
         <input
           type="range"
           id="panner"
-          className="control-pan"
+          className="control-panner"
           min="-1"
           max="1"
           value={this.state.pan}
@@ -114,7 +110,7 @@ class Controls extends Component {
           <option value="0" label="unity" />
           <option value="1" label="right" />
         </datalist>
-      </div>
+      </>
     );
   }
 }

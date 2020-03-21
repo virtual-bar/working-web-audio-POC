@@ -1,0 +1,53 @@
+.controls-pane {
+  height: 10em;
+  width: 100%;
+  background: #505050;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  button {
+    margin: 0 5px;
+    height: 1.5em;
+    background: #202020;
+    color: white;
+    border: none;
+    box-shadow: 2px 2px 2px black;
+  }
+
+  .control-volume {
+    margin: 0 50px;
+    position: relative;
+
+    &::before {
+      content: "MIN";
+      position: absolute;
+      top: 25%;
+      left: -30px;
+    }
+    &::after {
+      content: "MAX";
+      position: absolute;
+      top: 25%;
+      right: -34px;
+    }
+  }
+
+  .control-panner {
+    margin: 0 50px;
+    position: relative;
+
+    &::before {
+      content: "L";
+      position: absolute;
+      top: 25%;
+      left: -30px;
+    }
+    &::after {
+      content: "R";
+      position: absolute;
+      top: 25%;
+      right: -30px;
+    }
+  }
+}

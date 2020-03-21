@@ -20,22 +20,4 @@
   color: white;
 }
 
-.Controls {
-  height: 10em;
-  width: 100%;
-  background: #505050;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  button {
-    margin: 0 5px;
-    height: 1.5em;
-    background: #202020;
-    color: white;
-    border: none;
-    box-shadow: 2px 2px 2px black;
-  }
-}
-
-@import "./volume";
+@import "./controls";
