@@ -1,48 +1,24 @@
-import React, { useState, useEffect } from "react";
+import React, { setState, useState, useEffect } from "react";
+import { render } from 'react-dom';
+import Draggable from 'react-draggable';
 
-/////////////////////////////////////////////////////////////////////
-// POC for client-side single-source audio control using Web-Audio
-// API.
-//
-// Brandon Whittle, Christian Fuller
-// Bring Your Own Bar (BYOB)
-// 2020
-/////////////////////////////////////////////////////////////////////
+import {
+  RAudioContext,
+  RPanner,
+  RGain,
+  RMediaElementSource,
+  RPipeline
+} from 'r-audio';
 
-// Custom hook to setup audio states
-const useAudio = ({ initialGain, initialPan }) => {
-  const AudioContext = window.AudioContext || window.webkitAudioContext;
-  const [audioCtx] = useState(new AudioContext());
-  const [gainNode] = useState(audioCtx.createGain());
-  const [panner] = useState(new StereoPannerNode(audioCtx, { pan: initialPan }));
-
-  gainNode.gain.value = initialGain;
-
-  return { audioCtx, gainNode, panner };
-};
-
-const Controles = () => {
-  // () => "anonymous function; unnamed" i.e. onClick = () => {}
-  // Get ready for hooks
-  // Hooks are basically functions, powerful bc pattern
-
-  // Setting states for user controls
+const Controls = ({audioElement}) => {
+  const [scale, setScale] = useState(8);
   const [playing, setPlaying] = useState(false);
   const [volume, setVolume] = useState(1);
   const [pan, setPan] = useState(0);
+  const [positionX, setPositionX] = useState(0);
+  const [positionY, setPositionY] = useState(0);
 
-  // Initialization of audio states
-  const { audioCtx, gainNode, panner } = useAudio({ initialGain: 1, initialPan: 0 }); //can pass initials here if desired
 
-  // Play/Pause Button functionality
-  const togglePlaying = () => {
-    if (audioCtx.state === "suspended") {
-      audioCtx.resume();
-    }
-    setPlaying(!playing);
-  };
-
-  // Volume Slider functionality
   const changeVolume = e => {
     const {
       target: { value }
@@ -50,84 +26,64 @@ const Controles = () => {
     setVolume(value);
   };
 
+  const togglePlaying = () => {
+    setPlaying(!playing);
+    audioElement.paused ? audioElement.play() : audioElement.pause();
+  };
+
+  const handleDrag = ({ pageX, pageY}) => {
+    console.log((pageX / window.innerWidth - 0.5), (pageY / window.innerHeight - 0.5));
+    setPositionX((pageX / window.innerWidth - 0.5) * scale);
+    setPositionY((pageY / window.innerHeight - 0.5) * scale);
+  };
+
   // Panning Slider functionality
   const changePan = ({ target: { value } }) => setPan(value); //^^ they're the same
 
-  // SGetter for use in useEffect()
-  const getAudioElement = () => document.querySelector("audio");
-
-  // Post-Render One-Time Setup
-  useEffect(() => {
-    const audioElement = getAudioElement();
-    const track = audioCtx.createMediaElementSource(audioElement);
-
-    track
-      .connect(gainNode)
-      .connect(panner)
-      .connect(audioCtx.destination);
-  }, []); // Do not run again
-
-  // Post-Render On-Change settings
-  useEffect(() => {
-    const audioElement = getAudioElement();
-    
-    if (playing && audioElement.paused)  {
-      audioElement.play();
-    } else if (!playing && !audioElement.paused) { 
-      audioElement.pause();
-    }
-
-    gainNode.gain.value = volume;
-    panner.pan.value = pan;
-  }, [playing, volume, pan]); // Run only when these values change
-
-  // Good ol' JSX
-  return (
+  return(
     <>
-      <audio
-        src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/858/outfoxing.mp3"
-        crossOrigin="anonymous"
-      ></audio>
-      <button
+    <header className="controls-pane">
+    <RAudioContext>
+      <RPipeline>
+        <RMediaElementSource element={audioElement}/>
+        <RPanner 
+          panningModel='HRTF'
+          distanceModel='inverse'
+          refDistance={1}
+          maxDistance={5}
+          rolloffFactor={1}
+          coneInnerAngle={360}
+          coneOuterAngle={0}
+          oneOuterGain={0}
+          orientationX={1}
+          orientationY={0}
+          orientationZ={0}
+          positionX={positionX}
+          positionY={positionY}
+        />
+      </RPipeline>
+    </RAudioContext>
+    <button
         data-playing={playing}
         className="control-play"
         role="switch"
         onClick={togglePlaying}
       >
-        Play
-      </button>
-
-      <input
-        type="range"
-        id="volume"
-        className="control-volume"
-        min="0"
-        max="2"
-        value={volume}
-        onChange={changeVolume}
-        list="gainVals"
-        step="0.01"
-      />
-      <datalist id="gainVals">
-        <option value="1" label="unity" />
-      </datalist>
-
-      <input
-        type="range"
-        id="panner"
-        className="control-panner"
-        min="-1"
-        max="1"
-        value={pan}
-        onChange={changePan}
-        list="panVals"
-        step="0.01"
-      />
-      <datalist id="panVals">
-        <option value="0" label="unity" />
-      </datalist>
+      { playing ? 'Playing' : 'Paused' }
+    </button>
+    </header>
+    <Draggable
+        axis="both"
+        handle=".handle"
+        defaultPosition={{x: 0, y: 0}}
+        position={null}
+        scale={1}
+        onDrag={handleDrag}
+    >
+    <div className='listener handle'></div>
+    </Draggable>
     </>
   );
 };
 
-export default Controles;
+export default Controls;

@@ -1,13 +1,13 @@
 import React from "react";
 import "./styles/App.scss";
-import Controles from "./components/Controls";
+import Controls from "./components/Controls";
+
+const audio = new Audio('/outfoxing.mp3');
 
 function App() {
   return (
     <div className="App">
-      <header className="controls-pane">
-        <Controles />
-      </header>
+      <Controls audioElement={audio} />
     </div>
   );
 }
