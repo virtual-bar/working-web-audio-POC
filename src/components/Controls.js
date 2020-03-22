@@ -11,6 +11,7 @@ import {
 } from 'r-audio';
 
 const Controls = ({audioElement}) => {
+  const [scale, setScale] = useState(8);
   const [playing, setPlaying] = useState(false);
   const [volume, setVolume] = useState(1);
   const [pan, setPan] = useState(0);
@@ -32,8 +33,8 @@ const Controls = ({audioElement}) => {
 
   const handleDrag = ({ pageX, pageY}) => {
     console.log((pageX / window.innerWidth - 0.5), (pageY / window.innerHeight - 0.5));
-    setPositionX((pageX / window.innerWidth - 0.5)*8);
-    setPositionY((pageY / window.innerHeight - 0.5)*8);
+    setPositionX((pageX / window.innerWidth - 0.5) * scale);
+    setPositionY((pageY / window.innerHeight - 0.5) * scale);
   };
 
   // Panning Slider functionality
@@ -44,7 +45,7 @@ const Controls = ({audioElement}) => {
     <header className="controls-pane">
     <RAudioContext>
       <RPipeline>
-        <RMediaElementSource element={audioElement} paused={true}/>
+        <RMediaElementSource element={audioElement}/>
         <RPanner 
           panningModel='HRTF'
           distanceModel='inverse'
