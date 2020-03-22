@@ -7,9 +7,7 @@ const audio = new Audio('/outfoxing.mp3');
 function App() {
   return (
     <div className="App">
-      <header className="controls-pane">
-        <Controls audioElement={audio} />
-      </header>
+      <Controls audioElement={audio} />
     </div>
   );
 }
